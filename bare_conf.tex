@@ -515,17 +515,17 @@ Through our work, we try to show that it would not be necessary to consider the 
 %\subsection{Graph Partitioning}
 \subsection{Partitioning a Circuit Using a (Hyper)Graph}
 A circuit is made of logic gates connected by wires.
-From there, the translation to a hypergraph $\mathcal{H}$ is immediate: let $\mathcal{H} = (V, H)$ be an association between the set of vertices $V$ (\textit{e.g.} the gates) and the set of hyperedges $H$ (\textit{e.g.} the nets).
-% TODO: Define graph and hypergraph, maybe the translation from one the other.
-% TODO: Explain briefly how we transpose a circuit into a hypergraph.
-% TODO: Only after that, explain what is a partition, the algorithms and the problem.
+From there, the translation to a hypergraph $\mathcal{H}$ is immediate: let $\mathcal{H} = (V, H)$ be an association between the set of vertices $V$ (\textit{e.g.} the gates) and the set of hyperedges $H$ (\textit{e.g.} the nets). % Do I need to explain what a hypergraph is?
+Since all algorithms cannot be applied to hypergraphs, we sometimes need to transpose it to the corresponding graph using the k-clique model: we keep the same set of vertices, but each hyperedge that contains $k$ vertices becomes a $k$-clique in the new set of edges $E$.
+This yields a new association $\mathcal{G} = (V, E)$.
+Although \cite{IhlerEdmund;WagnerDorothea;Wagner1993} showed that the cut of a graph underlying a hypergraph is not as accurate, the approximation is acceptable for our purpose.
 
 When tackling the graph partitioning problem, it can mainly go two ways: minimizing or maximizing the cut, which is given by $\sum_{n \in E_c} w_{n}$, with $w_n$ the weight of the net $n$ in the set of cut edges $E_c$.
 The corresponding problems are respectively denoted MIN-CUT and MAX-CUT.
 
-If the MIN-CUT seems to make the most sense to be applied on a VLSI circuit for which we aim at limiting the amount of 3D connections, it is not necessarily our case.
-Indeed, MIN-CUT algorithms~\cite{Karypis1999} are already applied on the design at the floorplan and placement steps of the synthesis flow.
-When applying algorithms of the same family on the resulting architecture, we simply find the exact same partitioning as the previous step in the toolchain, not yielding any new interesting results.
+If MIN-CUT seems to make the most sense to be applied on a VLSI circuit for which we aim at limiting the amount of 3D connections, it is not necessarily our case.
+Indeed, MIN-CUT algorithms such as~\cite{Karypis1999} are already applied on the design at the floorplan and placement steps of the synthesis flow~\cite{KahngAndrewB.Lienig2011}.
+When applying algorithms of the same family on the resulting architecture, we simply find the exact same partitioning as the previous step in the toolchain, yielding few if any new interesting results.
 
 However, if we go the other way and apply a MAX-CUT algorithm on the 2D design, we can highlight interesting correlations between the amount of nets cut and the total 3D wire-length.
 Those results will be further presented in section~\ref{sec:res}.
@@ -561,8 +561,6 @@ Our toolchain works in several step using the \texttt{DEF} file from the placed 
 (2) The design is clustered.
 (3) From the clusters and the inter-cluster nets, a hypergraph $H = (E, V)$ is extracted, where $E$ is the set of hyperedges (\textit{i.e.} the nets) and $V$ is the set of vertices (\textit{i.e.} the clusters).
 (4) The hypergraph is then partitioned using \texttt{hMETIS} in the case of a mincut partitioning, or \texttt{CirCut} for the maxcut.
-It is to be noted that \texttt{CirCut} first needs the hypergraph to be translated into an undirected graph.
-Although \cite{IhlerEdmund;WagnerDorothea;Wagner1993} showed that the cut of a graph underlying a hypergraph is not as accurate, the approximation is acceptable for our purpose.
 
 \subsection{Clustering}
 The clustering method used is divisive hierarchical~\cite{Rokach2005} based on the geometry of the design.
