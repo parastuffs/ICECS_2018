@@ -320,7 +320,7 @@
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
 %\title{System Partitioning for 3D ICs:\\Is it even worth it?}
-\title{Logic-on-Logic Stacking:\\ Where Should the Clustering Stop?}
+\title{Logic-on-Logic Stacking:\\ Where Can the Clustering Stop?}
 
 
 % author names and affiliations
@@ -509,7 +509,7 @@ The clustering problem has aslo been studied at other step of the design, such a
 %Comparison between stacking and M3D: \cite{Samal2017}
 \cite{Samal2017} argued that 3D stacking was not practical for fine-grained 3D partitioning due to the size of the TSVs, and that a monolithic integration was the way to go.
 Through our work, we try to show that it would not be necessary to consider the architecture at such a fine grain, and that a coarser grain --for which their would be no congestion using larger TSVs-- improves as much the performance of the IC.
-
+% Statement: single-cell monolithic 3D does not better than a coarser grain cluster in terms of 3D wire-length.
 
 
 %\subsection{Graph Partitioning}
@@ -616,36 +616,6 @@ LDPC 4x4 & 808199 & 883295 & 10872106\\
 \newpage
 \section{Results}\label{sec:res}
 
-All results are given as a percentage of gates per cluster.
-Since all the clusters have the same size and the distribution of gates after the placement step is roughly homogeneous, it seems fair to admit that all clusters host the same amount of gates.
-Consequentially an increase of clusters quantity, a finer clustering grain and a decrease of gates per cluster all have the same meaning.
-
-Figure~\ref{fig:3Dwl} shows the proportion of 3D wire-length with respect to the total length of the design.
-Figure~\ref{fig:3Dnets} shows the proportion of nets cut by the partitioning with respect to the total amount of nets in the design.
-
-In order to limit the 3D pitch, it is important to cut as few wires as possible.
-On the other hand, one of the aim of going 3D is to reduce the length of those wire, hence we try to have as much 3D wire-length as possible.
-
-As the amount of wires cut keeps increasing with the number of clusters, the focus needs to be steered toward the total 3D wire-length.
-The later reaching a threshold, it becomes ideal to define a sweet spot when the 3D wire-length spots increasing, or at the very least when its increase rate decreases.
-
-Such sweet spot can be set around the 1\% of gates per cluster mark.
-This value corresponds to 1024 clusters and means that by cutting from 15\% to 25\% of all nets, we can reduce up to 50\% to 80\% of the total wire-length, depending on the considered design.
-
-%\begin{figure}[!t]
-%\centering
-%\includegraphics[width=\linewidth]{prop-3Dwl-wrt-design-prop-gate-per-clusters-maxcut.png}
-%\caption{The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold.}
-%\label{fig:3Dwl}
-%\end{figure}
-
-%\begin{figure}[!t]
-%\centering
-%\includegraphics[width=\linewidth]{prop-3Dwl-wrt-design_prop-gate-per-clusters_maxcutv2.png}
-%\caption{The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold.}
-%\label{fig:3Dwl}
-%\end{figure}
-
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\linewidth]{prop-3Dwl-wrt-design_prop-gate-per-clusters_maxcutv3.png}
@@ -659,6 +629,59 @@ This value corresponds to 1024 clusters and means that by cutting from 15\% to 2
 \caption{The total of net cut by the partitioning increases when the amount of gate per cluster decreases, \textit{i.e.} when the amount of clusters increases.}
 \label{fig:3Dnets}
 \end{figure}
+
+After partitioning the systems, a post-processing script analyzes all the cut nets to determine their amount and wire-length.
+The results are summarized in figures \ref{fig:3Dwl} and \ref{fig:3Dnets}.
+In both cases, the measures are given for each level of clustering as a proportion of gates per cluster, \textit{e.g.} for 100 clusters, each cluster hosts on average 1\% of all the gates in the design.
+Since all the clusters have the same size and the distribution of gates after the placement step is roughly homogeneous, it seems fair to admit that all clusters host the same amount of gates.
+Consequentially an increase of clusters quantity, a finer clustering grain and a decrease of gates per cluster all have the same meaning.
+
+Figure~\ref{fig:3Dwl} shows the proportion of 3D wire-length with respect to the total length of the design.
+We clearly see two stages: a first exponential growth of 3D wire-length when there are few clusters, and a second linear growth leading to a plateau.
+
+Figure~\ref{fig:3Dnets} shows the proportion of nets cut by the partitioning with respect to the total amount of nets in the design.
+Except occasional hiccups, the growth is exponential all through the finest clustering grain.
+
+In order to limit the 3D pitch, it is important to cut as few wires as possible.
+On the other hand, one of the aim of going 3D is to reduce the length of those wire, hence we try to have as much 3D wire-length as possible.
+
+As the amount of wires cut keeps increasing with the number of clusters, the focus needs to be steered toward the total 3D wire-length.
+The later reaching a threshold, it becomes ideal to define a sweet spot when the 3D wire-length spots increasing, or at the very least when its increase rate decreases.
+
+Such sweet spot can be set around the 0.1\% of gates per cluster mark.
+This value corresponds to 1024 clusters and means that by cutting from 24\% to 38\% of all nets, we can reduce up to 63\% to 83\% of the total wire-length, depending on the considered design (see table~\ref{tab:res}).
+
+\begin{table}[!t]
+% increase table row spacing, adjust to taste
+\renewcommand{\arraystretch}{1.3}
+\caption{MAX-CUT Results for Three Cluster Sizes}
+\label{tab:res}
+\centering
+% Some packages, such as MDW tools, offer better commands for making tables
+% than the plain LaTeX2e tabular which is used here.
+\begin{tabular}{||c||r|r|r||r|r|r||}
+\cline{2-7}
+\multicolumn{1}{c||}{} & \multicolumn{3}{c||}{Percentage of nets cut} & \multicolumn{3}{c||}{Percentage of 3D WL}\\
+\cline{2-7}
+\multicolumn{1}{c||}{} & 2 & 1024 & 32768 & 2 & 1024 & 32768\\
+\cline{2-7}
+\hline
+LDPC & 4\% & 32\% & 36\% & 35\% & 83\% & 85\%\\
+\hline
+BoomCore & 1\% & 30\% & 45\% & 11\% & 75\% & 82\%\\
+\hline
+flipr & 2\% & 33\% & 52\% & 15\% & 63\% & 75\%\\
+\hline
+CCX & 2\% & 38\% & 59\% & 4\% & 64\% & 75\%\\
+\hline
+SPC & 2\% & 32\% & 54\% & 14\% & 64\% & 74\%\\
+\hline
+LDPC 4x4 & 2\% & 26\% & 40\% & 17\% & 69\% & 74\%\\
+\hline
+LDPC 4x4 serial & 1\% & 24\% & 39\% & 8\% & 78\% & 82\%\\
+\hline
+\end{tabular}
+\end{table}
 
 %\begin{figure}[!t]
 %\centering
@@ -675,7 +698,7 @@ This value corresponds to 1024 clusters and means that by cutting from 15\% to 2
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\linewidth]{netCutWL_maxcut_all_log-quartv2.png}
-\caption{Distribution of the percentage of cut wire per logarithmic quartile of their wire-length relative to the longest net.}
+\caption{Distribution of the percentage of cut wires per logarithmic quartile of their wire-length relative to the longest net, for 1024 clusters.}
 \label{fig:dits-wl-quart}
 \end{figure}
 
@@ -710,7 +733,7 @@ In our future work, we could explore other clustering methods in order to furthe
 % number - used to balance the columns on the last page
 % adjust value as needed - may need to be readjusted if
 % the document is modified later
-%\IEEEtriggeratref{8}
+%\IEEEtriggeratref{3}
 % The "triggered" command can be changed if desired:
 %\IEEEtriggercmd{\enlargethispage{-5in}}
 
