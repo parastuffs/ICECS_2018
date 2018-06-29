@@ -111,7 +111,6 @@
 
 
 
-
 % *** GRAPHICS RELATED PACKAGES ***
 %
 \ifCLASSINFOpdf
@@ -311,6 +310,8 @@
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
+\usepackage{subfig}
+
 \begin{document}
 %
 % paper title
@@ -326,13 +327,16 @@
 % author names and affiliations
 % use a multiple column layout for up to three different
 % affiliations
-\author{\IEEEauthorblockN{Michael Jackson}
-\IEEEauthorblockA{School of Electrical and\\Computer Engineering\\
-Georgia Institute of Technology\\
-Atlanta, Georgia 30332--0250\\
-Email: http://www.michaelshell.org/contact.html}
+\author{\IEEEauthorblockN{Quentin \textsc{Delhaye}}
+\IEEEauthorblockA{\'Ecole polytechnique de Bruxelles\\
+Universit\'e libre de Bruxelles\\
+qudelhaye@ulb.ac.be}
 \and
-\IEEEauthorblockN{Harry ``The Mad Wizard'' Potter}}
+\IEEEauthorblockN{Dragomir \textsc{Milojevic}}
+\IEEEauthorblockA{\'Ecole polytechnique de Bruxelles\\
+Universit\'e libre de Bruxelles\\
+dmilojev@ulb.ac.be}%
+}
 
 % conference papers do not typically use \thanks and this command
 % is locked out in conference mode. If really needed, such as for
@@ -371,7 +375,9 @@ Email: http://www.michaelshell.org/contact.html}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-
+In this paper, we show evidence that 3D IC stacking is a viable alternative to IC technology scaling.
+This is proven by partitioning the system at different clustering grains and highlighting a sweet spot balancing 3D connections and total 3D wire-length.
+Using various designs as test cases, we present that around 1000 clusters will allow to cut on average 30\% of the nets and to consider 70\% of the total wire-length in 3D.
 \end{abstract}
 
 % no keywords
@@ -485,19 +491,19 @@ Email: http://www.michaelshell.org/contact.html}
 % \fnbelowfloat command of the stfloats package.
 
 \section{Introduction}
-While CMOS continues to scale, the question of Moore's law sustainability still remains open as we enter the era of 5 \& 3nm technologies, already in the pipeline for some ASIC manufacturers \footnote{``3nm transistor has been manufactured TSMC Aims for a \$ 20 Billion Investment for 3nm Chip Production – Looking to Secure Partners Early''}. Many facts could support the previous claim. Here we will cite just a few. 
+While CMOS continues to scale, the question of Moore's law sustainability still remains open as we enter the era of 5 and 3nm technologies, already in the pipeline for some ASIC manufacturers\footnote{``3nm transistor has been manufactured TSMC Aims for a \$ 20 Billion Investment for 3nm Chip Production – Looking to Secure Partners Early''}. Many facts could support the previous claim. Here we will cite just a few. 
 
-At device/gate level, gate pitch is not expected to scale further due to photo-lithography limitations. To still allow further area scaling, new type of devices have been proposed (FinFet, nano-wire, etc.) with huge number of device options. These device options impact in a great deal the final Power, Performance, Area (PPA) of a design and thus require careful optimization process during device selection/configuration \& standard cell design. Due to the number of options involved, this optimization process, known in the literature as Design-Technology Co-Optimization -- DCTO, is becoming more and more complex, requiring a lot of effort.
+At device/gate level, gate pitch is not expected to scale further due to photo-lithography limitations. To still allow further area scaling, new type of devices have been proposed (FinFet, nano-wire, etc.) with huge number of device options. These device options impact in a great deal the final Power, Performance, Area (PPA) of a design and thus require careful optimization process during device selection/configuration and standard cell design. Due to the number of options involved, this optimization process, known in the literature as Design-Technology Co-Optimization (DCTO), is becoming more and more complex, requiring a lot of effort.
 
-At logic level, alternative gate architectures have been explored, all aiming to reduce the height of standard cells. While this might look appealing at a first sight (area reduction of a gate with less scaled transistors) this also means that the number of routing tracks per gate decreases. Unfortunately, the number of pins per gate remains constant. After all we need cell inputs \& outputs as well as power pins. Reduced cell height will cause overall pin density at the design level to increase, which in turn will cause increased congestion, i.e. design routability problems. To cope with this problem we don't have much choices, we can increase design area and/or improve metal layers used for routing. Both solutions come with a cost penalty. 
+At logic level, alternative gate architectures have been explored, all aiming to reduce the height of standard cells. While this might look appealing at a first sight (area reduction of a gate with less scaled transistors), this also means that the number of routing tracks per gate decreases. Unfortunately, the number of pins per gate remains constant. After all we need cell inputs and outputs as well as power pins. Reduced cell height will cause overall pin density at the design level to increase, which in turn will cause increased congestion, i.e. design routability problems. To cope with this problem we don't have much choices, we can increase design area and/or improve metal layers used for routing. Both solutions come with a cost penalty. 
 
-And speaking of cost, it is known that advanced CMOS nodes are becoming more and more expensive, mainly because of complex multi-patterning techniques used for circuit manufacturing. Also, manufacturing yields can not reach desired figures, thus limiting the die area and preventing cost-effective manufacturing of big dies used for high-performance computing, network processors, etc. 
+Speaking of cost, it is known that advanced CMOS nodes are becoming more and more expensive, mainly because of complex multi-patterning techniques used for circuit manufacturing. Also, manufacturing yields can not reach desired figures, thus limiting the die area and preventing cost-effective manufacturing of big dies used for high-performance computing, network processors, etc. 
 
-To address different issues linked to traditional 2D CMOS scaling, 3D integration technology has been proposed, not as an alternative to CMOS scaling, but as a mean to extend the life-cycle of a given CMOS node. It is known that 3D integration offers benefits over 2D circuits: less wire-length, meaning improved system routability, so less buffer insertion during timing optimization, and therefore less total silicon area (for 1/2 of a footprint), less power \& better timing. 
+To address different issues linked to traditional 2D CMOS scaling, 3D integration technology has been proposed, not as an alternative to CMOS scaling, but as a mean to extend the life-cycle of a given CMOS node. It is known that 3D integration offers benefits over 2D circuits: less wire-length, meaning improved system routability, so less buffer insertion during timing optimization, and therefore less total silicon area (for 1/2 of a footprint), less power and better timing. 
 
-Beyond PPA improvements, 3D stacked circuits also offer the possibility of \emph{technologically heterogeneous circuit} integration. In such circuits different CMOS processes, each optimized for a given functionality (e.g. high-performance, low-power, memory) can be packaged together with different optimization objectives in mind. 
+Beyond PPA improvements, 3D stacked circuits also offer the possibility of \emph{technologically heterogeneous circuit} integration. In such circuits, different CMOS processes, each optimized for a given functionality (e.g. high-performance, low-power, memory), can be packaged together with different optimization objectives in mind. 
 
-Today, 3D technology is mature and already widely used for memories (stacked DRAMs), image circuits (smart-phones), high-performance computing (wide IO DRAMs) and re-configurable computing (FPGAs). From the technology perspective high-density 3D interconnects are readily available (e.g. hybrid bonding) with 3D structure pitch of about 1$\mu m$ resulting in very dense die-to-die interconnect. Such 3D technologies allows very fine grain system partitioning. The questions of course is how to design such systems and especially how to decide on the system partitioning, i.e. what functional block should go where. 
+Today, 3D technology is mature and already widely used for memories (stacked DRAMs), image circuits (smart-phones), high-performance computing (wide IO DRAMs) and re-configurable computing (FPGAs). From the technology perspective, high-density 3D interconnects are readily available (e.g. hybrid bonding) with 3D structure pitch of about 1$\mu$m resulting in very dense die-to-die interconnect. Such 3D technologies allows very fine grain system partitioning. The questions of course is how to design such systems and especially how to decide on the system partitioning, i.e. what functional block should go where. 
 
 In this paper we ... 
 
@@ -512,77 +518,59 @@ In this paper we ...
 
 \subsection{Previous Work}
 As of today there is no full support for 3D integration in commercial EDA tools. Rather, various extensions to existing 2D Place\&Route (P\&R) tools have been proposed in academia and industrial R\&D~\cite{Panth}. % Cite CoolCube?
-Extension of such approach with improved 3D PPA has been proposed in ~\cite{Chang2016}. % Cascade2D
+Extension of such approach with improved 3D, PPA has been proposed in ~\cite{Chang2016}. % Cascade2D
 Standard cell clustering problem has also been studied at other step of the design, such as during the P\&R step~\cite{Moura2017}. % ICECS2016 clustering 
 
-All the above mentioned flows relay either on manual system partitioning, or they automate the partitioning decision for smallest possible functionality, the gate. What remains unclear is what happens in between?  
+All the above mentioned flows relay either on manual system partitioning, or they automate the partitioning decision for the smallest possible functionality, the gate. What remains unclear is what happens in between?  
 
 %Comparison between stacking and M3D: \cite{Samal2017}
 \cite{Samal2017} argued that 3D stacking was not practical for fine-grained 3D partitioning due to the size of the TSVs, and that a monolithic integration was the way to go. However, monolithic integration still has couple of issues to solve, such as thermal budget required for sequential FEOL processing. Meanwhile, face-to-face hybrid bonding seams to offer a nice compromise between the amount of 3D interconnect and potential PPA gains.
 
-In our work, we try to understand the grain (i.e. the size at which it would not be necessary to consider the architecture at such a fine grain, and that a coarser grain --for which their would be no congestion using larger TSVs-- improves as much the performance of the IC.
+In this work, we try to understand the grain (i.e. the size of the clusters) at which it would be relevant to consider the architecture.
+In particular, we want to show that a very fine grain is not necessary and that a coarser grain --for which their would be no congestion using larger TSVs-- improves as much the performance of the IC.
 % Statement: single-cell monolithic 3D does not better than a coarser grain cluster in terms of 3D wire-length.
 
 \section{Problems ans solutions}
 \subsection{Optimization objectives}
-When partitioning a 2D system into 3D, there can be several optimization objectives, such as: (1) number of 3D nets, (2) total 3D system wire-length, (3) longest 3D net (and/or corresponding critical path), (4) total interconnect power.
+When partitioning a 2D system into a 3D one, several optimization objectives can be considered, such as: (1) number of 3D nets, (2) total 3D system wire-length, (3) longest 3D net (and/or corresponding critical path), (4) total interconnect power.
 
 Objective (1) is essential since it is driven by the pitch of the 3D connection given by the 3D technology. Obviously we need to match cost-effectiveness of the 3D design and PPA gains. Objective (2) needs to be analyzed to understand overall gains (power, congestion, etc.) while objective (3) focuses on critical path and thus the system performance. With 3D implemented system we hope to reduce the total wire-length by bringing the gates closer to each other. However, the 3D re-routed nets have to pass through the interface between the two gate layers and thus should not be longer than a critical threshold, in order to determine the kind of performance improvement at which we can aim. 
 Otherwise, those particularly short nets may become longer when routed in 3D, degrading their performance or even needing additional buffers.
 
 \subsection{Partitioning a Circuit Using a (Hyper)Graph}
-A circuit is made of logic gates connected by wires.
-From there, the translation to a hypergraph $\mathcal{H}$ is immediate: let $\mathcal{H} = (V, H)$ be an association between the set of vertices $V$ (\textit{e.g.} the gates) and the set of hyperedges $H$ (\textit{e.g.} the nets). % Do I need to explain what a hypergraph is?
-Since all algorithms cannot be applied to hypergraphs, we sometimes need to transpose it to the corresponding graph using the k-clique model: we keep the same set of vertices, but each hyperedge that contains $k$ vertices becomes a $k$-clique in the new set of edges $E$.
-This yields a new association $\mathcal{G} = (V, E)$.
-Although \cite{IhlerEdmund;WagnerDorothea;Wagner1993} showed that the cut of a graph underlying a hypergraph is not as accurate, the approximation is acceptable for our purpose.
+Digital integrated circuits are made out of logic gates placed in a 2D plane and connected by wires. Placed circuits can be easily represented with hypergraphs $\mathcal{H}$: let $\mathcal{H} = (V, H)$ be an association between the set of vertices $V$ (\textit{e.g.} the gates, or sets of gates, i.e. gate clusters, or simply clusters) and the set of hyperedges $H$ (\textit{e.g.} the nets). 
 
-When tackling the graph partitioning problem, it can mainly go two ways: minimizing or maximizing the cut, which is given by $\sum_{n \in E_c} w_{n}$, with $w_n$ the weight of the net $n$ in the set of cut edges $E_c$.
-The corresponding problems are respectively denoted MIN-CUT and MAX-CUT.
+Since some of the graph partitioning algorithms cannot be applied to hypergraphs, we sometimes need to transpose a hypergraph into a normal graph using the k-clique model: we keep the same set of vertices, but each hyperedge that contains $k$ vertices becomes a $k$-clique in the new set of edges $E$. This yields a new association $\mathcal{G} = (V, E)$. While such transformations have been criticized (see \cite{IhlerEdmund;WagnerDorothea;Wagner1993}) due to loss of accuracy, this approximation is acceptable for our purpose. % WHY?
 
-If MIN-CUT seems to make the most sense to be applied on a VLSI circuit for which we aim at limiting the amount of 3D connections, it is not necessarily our case.
-Indeed, MIN-CUT algorithms such as~\cite{Karypis1999, Aykanat2011, Caldwell2000} are already applied on the design at the floorplan and placement steps of the synthesis flow~\cite{KahngAndrewB.Lienig2011}.
+When tackling the graph partitioning problem, it can mainly go two ways: minimizing or maximizing the cut, which is given by $\sum_{n \in E_c} w_{n}$, with $w_n$ the weight of the net $n$ in the set of cut edges $E_c$. The corresponding problems are respectively denoted as MIN-CUT and MAX-CUT.
+
+If MIN-CUT seems to make the most sense to be applied on a VLSI circuit for which we aim at limiting the amount of 3D connections, it is not necessarily our case. Indeed, MIN-CUT algorithms such as~\cite{Karypis1999, Aykanat2011, Caldwell2000} are already applied on the design at the floorplan and placement steps of the synthesis flow~\cite{KahngAndrewB.Lienig2011}.
+
 When applying algorithms of the same family on the resulting architecture, we simply find the exact same partitioning as the previous step in the toolchain, yielding few if any new interesting results.
 
 However, if we go the other way and apply a MAX-CUT algorithm on the 2D design, we can highlight interesting correlations between the amount of nets cut and the total 3D wire-length.
 Those results will be further presented in section~\ref{sec:res}.
 
-
 % MIN-CUT: \texttt{hMETIS}~\cite{Karypis1999}.
 
-Goemans and Williamson \cite{Goemans1995} proposed a randomized algorithm for the MAX-CUT problem, guaranteeing that their solution would be at least 0.87856 times the optimal value, using semidefinite programming. Burer et al. \cite{Burer2000} presented an improvement over the SDP relaxation in the form of a rank-two relaxation, and implemented their algorithm in the package \texttt{CirCut}.
+Goemans and Williamson \cite{Goemans1995} proposed a randomized algorithm for the MAX-CUT problem, guaranteeing that their solution would be at least 0.87856 time the optimal value, using semidefinite programming. Burer et al. \cite{Burer2000} presented an improvement over the SDP relaxation in the form of a rank-two relaxation, and implemented their algorithm in the package \texttt{CirCut}.
 
 On top of using those methods, we want to compute a balanced bi-partitioning of the system, meaning that two partitions of the same size need to be produced, \textit{i.e.} of the same area in our application.
 
-
-
 \section{Experimental Setup}
+% This is important and should connect to the intro
+% and therefore the maximum required 3D pitch, 
+To study the impact of the partitioning grain on potential wire-length gains of the 3D design with respect to 2D implementation, we have developed a software tool chain to process placed \& routed designs and partition netlists for 3D integration. 
 
-Our toolchain works in several step using the \texttt{DEF} file from the placed and routed 2D design and the \texttt{LEF} technology file.
-(1) The input files are parsed to extract the connectivity of the design.
-(2) The design is clustered.
-(3) From the clusters and the inter-cluster nets, a hypergraph $H = (E, V)$ is extracted, where $E$ is the set of hyperedges (\textit{i.e.} the nets) and $V$ is the set of vertices (\textit{i.e.} the clusters).
-(4) The hypergraph is then partitioned using \texttt{hMETIS}~\cite{Karypis1999} or \texttt{PaToH}~\cite{Aykanat2011} in the case of a mincut partitioning, or \texttt{CirCut} for the maxcut.
+The tool takes as input a 2D placed \& routed design using \texttt{DEF} file, and geometrical views of standard cells (\texttt{LEF} file) to build usable design data base. Following operations are then performed: (1) Input files are parsed to extract the design; (2) Standard cells are clustered, so that each cluster represents a graph vertex ($V$) where vertex weight represent the total cluster area; (3) Inter-cluster nets are extracted to generate graph edges ($E$) and weight function is calculated for each edge (note that we consider different weights); (4) With that information we can build a hypergraph $H = (E, V)$; (5) This hypergraph can be partitioned using: a) MIN-CUT partitioning (using already available implementations in \texttt{hMETIS}~\cite{Karypis1999} or \texttt{PaToH}~\cite{Aykanat2011})  to minimize, or MAX-CUT (using \texttt{CirCut}) maximize the number of inter-die (or 3D) connections.
 
 \subsection{Clustering}
-The clustering method used is divisive hierarchical~\cite{Rokach2005} based on the geometry of the design.
-The way it works is as follows: the design is first split vertically into two part of the same size, then each part is split again, but horizontally.
-This process is repeated -- subsequent vertical and horizontal split -- until the target amount of clusters is reached.
-
-For this experiment, the following cluster sizes have been selected: 2, 4, 8, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384 and 32768.
+To generate standard cell clusters we use divisive hierarchical~\cite{Rokach2005} based on the geometry of the design: design is first split vertically into two parts of the same size, then each part is split again, but horizontally.
+This process is repeated recursively -- subsequent vertical and horizontal splits -- until the target amount of clusters is reached. In our experiments we consider the cluster sizes from 2 to 32768 in power-of-2 steps. The biggest number of clusters (i.e. the smallest cluster size) has been picked with the gate-count of designs in mind.
 
 \subsection{Designs}
 Some details about the designs used in the experiments are given in table~\ref{tab:designs}.
-More specifically:
-\begin{itemize}
-    \item BoomCore: \textit{Berkeley Out-of-Order Machine}, an open source implementation of the RISC-V.
-    \item flipr: a VLIW processor from IMEC.
-    \item SPC and CCX: respectively a core and the memory crossbar of the OpenSparc T2.
-    \item LDPC: an implementation of the LDPC correcting code.
-    \item LDPC 4x4: a highly interconnected implementation of 16 LDPC cores.
-    \item LDPC 4x4 serial: a serial implementation of 16 LDPC cores.
-\end{itemize}
-
+Our design data base uses the following designs: D1) BoomCore: \textit{Berkeley Out-of-Order Machine}, an open source implementation of the RISC-V; D2) MCC: a medium complexity core; D3) \& D4) respectively a core and crossbar sub-circuits of the OpenSparc T2; D5) open source implementation of low-parity density parity check; D6) LDPC 4x4: a highly interconnected implementation of 16 LDPC cores D7) LDPC 4x4 serial: a serial implementation of 16 LDPC cores.
 
 \begin{table}[!t]
 % increase table row spacing, adjust to taste
@@ -592,6 +580,9 @@ More specifically:
 \centering
 % Some packages, such as MDW tools, offer better commands for making tables
 % than the plain LaTeX2e tabular which is used here.
+
+% sort designs in increaseing order and call them D1
+
 \begin{tabular}{||c|r|r|r||}
 \hline
 Design & Gates & Nets & Total wire-length\\
@@ -601,7 +592,7 @@ LDPC & 42471 & 49633 & 242001\\
 \hline
 BoomCore & 121580 & 137171 & 418217\\
 \hline
-flipr & 220587 & 234373 & 1047417 \\
+MCC & 220587 & 234373 & 1047417 \\
 \hline
 CCX & 185777 & 200999 & 5698294\\
 \hline
@@ -614,22 +605,34 @@ LDPC 4x4 & 808199 & 883295 & 10872106\\
 \end{tabular}
 \end{table}
 
-
 \section{Results}\label{sec:res}
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{prop-3Dwl-wrt-design_prop-gate-per-clusters_maxcutv3.png}
-\caption{The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold.}
-\label{fig:3Dwl}
-\end{figure}
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{prop-netcut-wrt-design_prop-gate-per-clusters_maxcutv2.png}
-\caption{The total of net cut by the partitioning increases when the amount of gate per cluster decreases, \textit{i.e.} when the amount of clusters increases.}
-\label{fig:3Dnets}
-\end{figure}
+
+
+% \begin{figure*}
+%   \centering
+%   \subfloat{\includegraphics[scale=0.25]{prop-3Dwl-wrt-design_prop-gate-per-clusters_maxcut_v4.png} 
+%   \hfill
+%   \subfloat{\includegraphics[scale=0.25]{prop-netcut-wrt-design_prop-gate-per-clusters_maxcutv3.png} 
+%   \caption{a) The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold and b) The total of net cut by the partitioning increases when the amount of gate per cluster decreases, \textit{i.e.} when the amount of clusters increases.}
+%   \label{fig:3Dwl}
+% \end{figure*} 
+
+
+% \begin{figure}[!t]
+% \centering
+% \includegraphics[width=\linewidth]{prop-3Dwl-wrt-design_prop-gate-per-clusters_maxcut_v4.png}
+% \caption{The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold.}
+% \label{fig:3Dwl}
+% \end{figure}
+
+% \begin{figure}[!t]
+% \centering
+% \includegraphics[width=\linewidth]{prop-netcut-wrt-design_prop-gate-per-clusters_maxcutv3.png}
+% \caption{The total of net cut by the partitioning increases when the amount of gate per cluster decreases, \textit{i.e.} when the amount of clusters increases.}
+% \label{fig:3Dnets}
+% \end{figure}
 
 After partitioning the systems, a post-processing script analyzes all the cut nets to determine their quantity and wire-length.
 The results are summarized in figures \ref{fig:3Dwl} and \ref{fig:3Dnets}.
@@ -671,7 +674,7 @@ LDPC & 4\% & 32\% & 36\% & 35\% & 83\% & 85\%\\
 \hline
 BoomCore & 1\% & 30\% & 45\% & 11\% & 75\% & 82\%\\
 \hline
-flipr & 2\% & 33\% & 52\% & 15\% & 63\% & 75\%\\
+MCC & 2\% & 33\% & 52\% & 15\% & 63\% & 75\%\\
 \hline
 CCX & 2\% & 38\% & 59\% & 4\% & 64\% & 75\%\\
 \hline
@@ -696,9 +699,10 @@ LDPC 4x4 serial & 1\% & 24\% & 39\% & 8\% & 78\% & 82\%\\
 %It is interesting to note that the vast majority of wires belongs to the first decile, \textit{i.e.} are among the shortest in the design.
 
 
+
 \begin{figure}[!t]
 \centering
-\includegraphics[width=\linewidth]{netCutWL_maxcut_all_log-quartv2.png}
+\includegraphics[width=\linewidth]{netCutWL_maxcut_all_log-quartv3.png}
 \caption{Distribution of the percentage of cut wires per logarithmic quartile of their wire-length relative to the longest net, for 1024 clusters.}
 \label{fig:dits-wl-quart}
 \end{figure}
