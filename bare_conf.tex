@@ -497,15 +497,13 @@ At device/gate level, gate pitch is not expected to scale further due to photo-l
 
 At logic level, alternative gate architectures have been explored, all aiming to reduce the height of standard cells. While this might look appealing at a first sight (area reduction of a gate with less scaled transistors), this also means that the number of routing tracks per gate decreases. Unfortunately, the number of pins per gate remains constant. After all we need cell inputs and outputs as well as power pins. Reduced cell height will cause overall pin density at the design level to increase, which in turn will cause increased congestion, i.e. design routability problems. To cope with this problem we don't have much choices, we can increase design area and/or improve metal layers used for routing. Both solutions come with a cost penalty. 
 
-Speaking of cost, it is known that advanced CMOS nodes are becoming more and more expensive, mainly because of complex multi-patterning techniques used for circuit manufacturing. Also, manufacturing yields can not reach desired figures, thus limiting the die area and preventing cost-effective manufacturing of big dies used for high-performance computing, network processors, etc. 
+Speaking of cost, it is known that advanced CMOS nodes are becoming more and more expensive, mainly because of complex multi-patterning techniques used for circuit manufacturing. Furthermore, manufacturing yields can not reach desired figures, thus limiting the die area and preventing cost-effective manufacturing of big dies used for high-performance computing, network processors, etc. 
 
-To address different issues linked to traditional 2D CMOS scaling, 3D integration technology has been proposed, not as an alternative to CMOS scaling, but as a mean to extend the life-cycle of a given CMOS node. It is known that 3D integration offers benefits over 2D circuits: less wire-length, meaning improved system routability, so less buffer insertion during timing optimization, and therefore less total silicon area (for 1/2 of a footprint), less power and better timing. 
+To address different issues linked to traditional 2D CMOS scaling, 3D integration technology has been proposed, not as an alternative to CMOS scaling, but as a mean to extend the life-cycle of a given CMOS node. It is known that 3D integration offers benefits over 2D circuits: less wire-length, meaning improved system routability, so less buffer insertion during timing optimization, and therefore less total silicon area (as we halve the footprint in a two-layers system), less power and better timing. 
 
 Beyond PPA improvements, 3D stacked circuits also offer the possibility of \emph{technologically heterogeneous circuit} integration. In such circuits, different CMOS processes, each optimized for a given functionality (e.g. high-performance, low-power, memory), can be packaged together with different optimization objectives in mind. 
 
 Today, 3D technology is mature and already widely used for memories (stacked DRAMs), image circuits (smart-phones), high-performance computing (wide IO DRAMs) and re-configurable computing (FPGAs). From the technology perspective, high-density 3D interconnects are readily available (e.g. hybrid bonding) with 3D structure pitch of about 1$\mu$m resulting in very dense die-to-die interconnect. Such 3D technologies allows very fine grain system partitioning. The questions of course is how to design such systems and especially how to decide on the system partitioning, i.e. what functional block should go where. 
-
-In this paper we ... 
 
 %A logic-on-logic 3D IC is a system in which there are several layers of logic stacked.
 %The first and most obvious gain of designing such a system is that the gates are closer to each other relatively to a pure 2D IC.
@@ -514,31 +512,31 @@ In this paper we ...
 %Indeed, when a long net is shortened, the hypothetical buffers and repeaters that it needed are no %longer required, freeing some space for the placement tool and decreasing the congestion.
 %There are two main concurrent approaches to 3D ICs: monolithic and stacking.
 
-% TODO remove \textit around e.g. and i.e.
-
-\subsection{Previous Work}
+%\subsection{Previous Work}
 As of today there is no full support for 3D integration in commercial EDA tools. Rather, various extensions to existing 2D Place\&Route (P\&R) tools have been proposed in academia and industrial R\&D~\cite{Panth}. % Cite CoolCube?
 Extension of such approach with improved 3D, PPA has been proposed in ~\cite{Chang2016}. % Cascade2D
 Standard cell clustering problem has also been studied at other step of the design, such as during the P\&R step~\cite{Moura2017}. % ICECS2016 clustering 
 
 All the above mentioned flows relay either on manual system partitioning, or they automate the partitioning decision for the smallest possible functionality, the gate. What remains unclear is what happens in between?  
 
-%Comparison between stacking and M3D: \cite{Samal2017}
 \cite{Samal2017} argued that 3D stacking was not practical for fine-grained 3D partitioning due to the size of the TSVs, and that a monolithic integration was the way to go. However, monolithic integration still has couple of issues to solve, such as thermal budget required for sequential FEOL processing. Meanwhile, face-to-face hybrid bonding seams to offer a nice compromise between the amount of 3D interconnect and potential PPA gains.
 
 In this work, we try to understand the grain (i.e. the size of the clusters) at which it would be relevant to consider the architecture.
 In particular, we want to show that a very fine grain is not necessary and that a coarser grain --for which their would be no congestion using larger TSVs-- improves as much the performance of the IC.
 % Statement: single-cell monolithic 3D does not better than a coarser grain cluster in terms of 3D wire-length.
 
-\section{Problems ans solutions}
-\subsection{Optimization objectives}
-When partitioning a 2D system into a 3D one, several optimization objectives can be considered, such as: (1) number of 3D nets, (2) total 3D system wire-length, (3) longest 3D net (and/or corresponding critical path), (4) total interconnect power.
 
-Objective (1) is essential since it is driven by the pitch of the 3D connection given by the 3D technology. Obviously we need to match cost-effectiveness of the 3D design and PPA gains. Objective (2) needs to be analyzed to understand overall gains (power, congestion, etc.) while objective (3) focuses on critical path and thus the system performance. With 3D implemented system we hope to reduce the total wire-length by bringing the gates closer to each other. However, the 3D re-routed nets have to pass through the interface between the two gate layers and thus should not be longer than a critical threshold, in order to determine the kind of performance improvement at which we can aim. 
+In this paper, we go over the optimization objectives circuit partitioning problem when turning a system 3D in section~\ref{sec:optobj}; we present our tool chain, clustering method and designs tested in section~\ref{sec:setup}; we analyze the link between clustering grain and partitioning cut in section~\ref{sec:res}; and we conclude this paper in section~\ref{sec:concl}.
+
+\section{Problems ans solutions}\label{sec:optobj}
+\subsection{Optimization objectives}
+When partitioning a 2D system into a 3D one, several optimization objectives can be considered, such as: (1) number of 3D nets, (2) total 3D system wire-length, (3) total interconnect power, (4) longest 3D net (and/or corresponding critical path).
+
+Objective (1) is essential since it is driven by the pitch of the 3D connection given by the 3D technology. Obviously we need to match cost-effectiveness of the 3D design and PPA gains. Objective (2) and (3) needs to be analyzed to understand overall gains (power, congestion, etc.) while objective (4) focuses on critical path and thus the system performance. With 3D implemented system we hope to reduce the total wire-length by bringing the gates closer to each other. However, the 3D re-routed nets have to pass through the interface between the two gate layers and thus should not be longer than a critical threshold, in order to determine the kind of performance improvement at which we can aim. 
 Otherwise, those particularly short nets may become longer when routed in 3D, degrading their performance or even needing additional buffers.
 
 \subsection{Partitioning a Circuit Using a (Hyper)Graph}
-Digital integrated circuits are made out of logic gates placed in a 2D plane and connected by wires. Placed circuits can be easily represented with hypergraphs $\mathcal{H}$: let $\mathcal{H} = (V, H)$ be an association between the set of vertices $V$ (\textit{e.g.} the gates, or sets of gates, i.e. gate clusters, or simply clusters) and the set of hyperedges $H$ (\textit{e.g.} the nets). 
+Digital integrated circuits are made out of logic gates placed in a 2D plane and connected by wires. Placed circuits can be easily represented with hypergraphs $\mathcal{H}$: let $\mathcal{H} = (V, H)$ be an association between the set of vertices $V$ (e.g. the gates, or sets of gates, i.e. gate clusters, or simply clusters) and the set of hyperedges $H$ (e.g. the nets). 
 
 Since some of the graph partitioning algorithms cannot be applied to hypergraphs, we sometimes need to transpose a hypergraph into a normal graph using the k-clique model: we keep the same set of vertices, but each hyperedge that contains $k$ vertices becomes a $k$-clique in the new set of edges $E$. This yields a new association $\mathcal{G} = (V, E)$. While such transformations have been criticized (see \cite{IhlerEdmund;WagnerDorothea;Wagner1993}) due to loss of accuracy, this approximation is acceptable for our purpose. % WHY?
 
@@ -551,13 +549,12 @@ When applying algorithms of the same family on the resulting architecture, we si
 However, if we go the other way and apply a MAX-CUT algorithm on the 2D design, we can highlight interesting correlations between the amount of nets cut and the total 3D wire-length.
 Those results will be further presented in section~\ref{sec:res}.
 
-% MIN-CUT: \texttt{hMETIS}~\cite{Karypis1999}.
 
 Goemans and Williamson \cite{Goemans1995} proposed a randomized algorithm for the MAX-CUT problem, guaranteeing that their solution would be at least 0.87856 time the optimal value, using semidefinite programming. Burer et al. \cite{Burer2000} presented an improvement over the SDP relaxation in the form of a rank-two relaxation, and implemented their algorithm in the package \texttt{CirCut}.
 
-On top of using those methods, we want to compute a balanced bi-partitioning of the system, meaning that two partitions of the same size need to be produced, \textit{i.e.} of the same area in our application.
+On top of using those methods, we want to compute a balanced bi-partitioning of the system, meaning that two partitions of the same size need to be produced, i.e. of the same area in our application.
 
-\section{Experimental Setup}
+\section{Experimental Setup}\label{sec:setup}
 % This is important and should connect to the intro
 % and therefore the maximum required 3D pitch, 
 To study the impact of the partitioning grain on potential wire-length gains of the 3D design with respect to 2D implementation, we have developed a software tool chain to process placed \& routed designs and partition netlists for 3D integration. 
@@ -615,7 +612,7 @@ LDPC 4x4 & 808199 & 883295 & 10872106\\
   \subfloat[]{\includegraphics[scale=0.45]{prop-3Dwl-wrt-design_prop-gate-per-clusters_maxcut_v4.png}}
   \hfill
   \subfloat[]{\includegraphics[scale=0.45]{prop-netcut-wrt-design_prop-gate-per-clusters_maxcutv3.png}}
-  \caption{(a) The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold and (b) The total of net cut by the partitioning increases when the amount of gate per cluster decreases, \textit{i.e.} when the amount of clusters increases.}
+  \caption{(a) The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold and (b) The total of net cut by the partitioning increases when the amount of gate per cluster decreases, i.e. when the amount of clusters increases.}
   \label{fig:3Dnets}
 \end{figure*} 
 
@@ -636,7 +633,7 @@ LDPC 4x4 & 808199 & 883295 & 10872106\\
 
 After partitioning the systems, a post-processing script analyzes all the cut nets to determine their quantity and wire-length.
 The results are summarized in Fig.~\ref{fig:3Dnets}.
-In both cases, the measures are given for each level of clustering as a proportion of gates per cluster, \textit{e.g.} for 100 clusters, each cluster hosts on average 1\% of all the gates in the design.
+In both cases, the measures are given for each level of clustering as a proportion of gates per cluster, e.g. for 100 clusters, each cluster hosts on average 1\% of all the gates in the design.
 Since all the clusters have the same size and the distribution of gates after the placement step is roughly homogeneous, it seems fair to admit that all clusters host the same amount of gates.
 Consequentially an increase of clusters quantity, a finer clustering grain and a decrease of gates per cluster all have the same meaning.
 
@@ -712,7 +709,7 @@ In particular, it highlights the fact that the shortest nets are a minority, hen
 
 
 
-\section{Conclusion}
+\section{Conclusion}\label{sec:concl}
 In this paper, we showed that there exist a sweet spot for the clustering grain, which balances the amount 3D nets and the total 3D wire-length.
 The existence of this equilibrium tells us that we do not need to consider the circuit at a very fine grain; that a coarse grain is adequate.
 Hence the 3D stacking is still a viable option and we do not need to bother with a monolithic integration.
