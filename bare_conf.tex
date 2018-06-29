@@ -215,11 +215,11 @@
 
 
 % *** SUBFIGURE PACKAGES ***
-%\ifCLASSOPTIONcompsoc
-%  \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
-%\else
-%  \usepackage[caption=false,font=footnotesize]{subfig}
-%\fi
+\ifCLASSOPTIONcompsoc
+  \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
+\else
+  \usepackage[caption=false,font=footnotesize]{subfig}
+\fi
 % subfig.sty, written by Steven Douglas Cochran, is the modern replacement
 % for subfigure.sty, the latter of which is no longer maintained and is
 % incompatible with some LaTeX packages including fixltx2e. However,
@@ -258,7 +258,7 @@
 % http://www.ctan.org/pkg/fixltx2e
 
 
-%\usepackage{stfloats}
+\usepackage{stfloats}
 % stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
 % the ability to do double column floats at the bottom of the page as well
 % as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
@@ -562,15 +562,15 @@ On top of using those methods, we want to compute a balanced bi-partitioning of 
 % and therefore the maximum required 3D pitch, 
 To study the impact of the partitioning grain on potential wire-length gains of the 3D design with respect to 2D implementation, we have developed a software tool chain to process placed \& routed designs and partition netlists for 3D integration. 
 
-The tool takes as input a 2D placed \& routed design using \texttt{DEF} file, and geometrical views of standard cells (\texttt{LEF} file) to build usable design data base. Following operations are then performed: (1) Input files are parsed to extract the design; (2) Standard cells are clustered, so that each cluster represents a graph vertex ($V$) where vertex weight represent the total cluster area; (3) Inter-cluster nets are extracted to generate graph edges ($E$) and weight function is calculated for each edge (note that we consider different weights); (4) With that information we can build a hypergraph $H = (E, V)$; (5) This hypergraph can be partitioned using: a) MIN-CUT partitioning (using already available implementations in \texttt{hMETIS}~\cite{Karypis1999} or \texttt{PaToH}~\cite{Aykanat2011})  to minimize, or MAX-CUT (using \texttt{CirCut}) maximize the number of inter-die (or 3D) connections.
+The tool takes as input a 2D placed \& routed design using \texttt{DEF} file, and geometrical views of standard cells (\texttt{LEF} file) to build usable design data base. Following operations are then performed: (1) Input files are parsed to extract the design; (2) Standard cells are clustered, so that each cluster represents a graph vertex ($V$) where its weight represents the total cluster area; (3) Inter-cluster nets are extracted to generate hyperedges ($H$) and weight function is calculated for each edge (note that we consider different weights); (4) With that information we can build a hypergraph $\mathcal{H}$; (5) This hypergraph can be partitioned using: a) MIN-CUT partitioning (using already available implementations in \texttt{hMETIS}~\cite{Karypis1999} or \texttt{PaToH}~\cite{Aykanat2011}) to minimize the cut size, or b) MAX-CUT (using \texttt{CirCut}) maximize the number of inter-die (or 3D) connections.
 
 \subsection{Clustering}
-To generate standard cell clusters we use divisive hierarchical~\cite{Rokach2005} based on the geometry of the design: design is first split vertically into two parts of the same size, then each part is split again, but horizontally.
+To generate standard cell clusters we use divisive hierarchical~\cite{Rokach2005} based on the geometry of the design: it is first split vertically into two parts of the same size, then each part is split again, but horizontally.
 This process is repeated recursively -- subsequent vertical and horizontal splits -- until the target amount of clusters is reached. In our experiments we consider the cluster sizes from 2 to 32768 in power-of-2 steps. The biggest number of clusters (i.e. the smallest cluster size) has been picked with the gate-count of designs in mind.
 
 \subsection{Designs}
 Some details about the designs used in the experiments are given in table~\ref{tab:designs}.
-Our design data base uses the following designs: D1) BoomCore: \textit{Berkeley Out-of-Order Machine}, an open source implementation of the RISC-V; D2) MCC: a medium complexity core; D3) \& D4) respectively a core and crossbar sub-circuits of the OpenSparc T2; D5) open source implementation of low-parity density parity check; D6) LDPC 4x4: a highly interconnected implementation of 16 LDPC cores D7) LDPC 4x4 serial: a serial implementation of 16 LDPC cores.
+Our design data base uses the following designs: D1) BoomCore: \textit{Berkeley Out-of-Order Machine}, an open source implementation of the RISC-V; D2) MCC: a medium complexity core; D3) \& D4) respectively a core and crossbar sub-circuits of the OpenSparc T2; D5) open source implementation of low-parity density parity check (LDPC); D6) LDPC 4x4: a highly interconnected implementation of 16 LDPC cores D7) LDPC 4x4 serial: a serial implementation of 16 LDPC cores.
 
 \begin{table}[!t]
 % increase table row spacing, adjust to taste
@@ -588,15 +588,15 @@ Our design data base uses the following designs: D1) BoomCore: \textit{Berkeley 
 Design & Gates & Nets & Total wire-length\\
 \hline
 \hline
-LDPC & 42471 & 49633 & 242001\\
-\hline
 BoomCore & 121580 & 137171 & 418217\\
 \hline
 MCC & 220587 & 234373 & 1047417 \\
 \hline
+SPC & 289812 & 306118 & 10479466\\
+\hline
 CCX & 185777 & 200999 & 5698294\\
 \hline
-SPC & 289812 & 306118 & 10479466\\
+LDPC & 42471 & 49633 & 242001\\
 \hline
 LDPC 4x4 Serial & 694082 & 773679 & 6023683\\
 \hline
@@ -610,14 +610,14 @@ LDPC 4x4 & 808199 & 883295 & 10872106\\
 
 
 
-% \begin{figure*}
-%   \centering
-%   \subfloat{\includegraphics[scale=0.25]{prop-3Dwl-wrt-design_prop-gate-per-clusters_maxcut_v4.png} 
-%   \hfill
-%   \subfloat{\includegraphics[scale=0.25]{prop-netcut-wrt-design_prop-gate-per-clusters_maxcutv3.png} 
-%   \caption{a) The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold and b) The total of net cut by the partitioning increases when the amount of gate per cluster decreases, \textit{i.e.} when the amount of clusters increases.}
-%   \label{fig:3Dwl}
-% \end{figure*} 
+\begin{figure*}
+  \centering
+  \subfloat[]{\includegraphics[scale=0.45]{prop-3Dwl-wrt-design_prop-gate-per-clusters_maxcut_v4.png}}
+  \hfill
+  \subfloat[]{\includegraphics[scale=0.45]{prop-netcut-wrt-design_prop-gate-per-clusters_maxcutv3.png}}
+  \caption{(a) The total 3D wire-length increases when the amount of gate per cluster decreases, until it reaches a threshold and (b) The total of net cut by the partitioning increases when the amount of gate per cluster decreases, \textit{i.e.} when the amount of clusters increases.}
+  \label{fig:3Dnets}
+\end{figure*} 
 
 
 % \begin{figure}[!t]
@@ -635,15 +635,15 @@ LDPC 4x4 & 808199 & 883295 & 10872106\\
 % \end{figure}
 
 After partitioning the systems, a post-processing script analyzes all the cut nets to determine their quantity and wire-length.
-The results are summarized in figures \ref{fig:3Dwl} and \ref{fig:3Dnets}.
+The results are summarized in Fig.~\ref{fig:3Dnets}.
 In both cases, the measures are given for each level of clustering as a proportion of gates per cluster, \textit{e.g.} for 100 clusters, each cluster hosts on average 1\% of all the gates in the design.
 Since all the clusters have the same size and the distribution of gates after the placement step is roughly homogeneous, it seems fair to admit that all clusters host the same amount of gates.
 Consequentially an increase of clusters quantity, a finer clustering grain and a decrease of gates per cluster all have the same meaning.
 
-Figure~\ref{fig:3Dwl} shows the proportion of 3D wire-length with respect to the total length of the design.
+Fig.~\ref{fig:3Dnets}(a) shows the proportion of 3D wire-length with respect to the total length of the design.
 We clearly see two stages: a first exponential growth of 3D wire-length when there are few clusters, and a second linear growth leading to a plateau.
 
-Figure~\ref{fig:3Dnets} shows the proportion of nets cut by the partitioning with respect to the total amount of nets in the design.
+Fig.~\ref{fig:3Dnets}(b) shows the proportion of nets cut by the partitioning with respect to the total amount of nets in the design.
 Except occasional hiccups, the growth is exponential all through the finest clustering grain.
 
 In order to limit the 3D pitch, it is important to cut as few wires as possible.
@@ -670,15 +670,15 @@ This value corresponds to 1024 clusters and means that by cutting from 24\% to 3
 \multicolumn{1}{c||}{} & 2 & 1024 & 32768 & 2 & 1024 & 32768\\
 \cline{2-7}
 \hline
-LDPC & 4\% & 32\% & 36\% & 35\% & 83\% & 85\%\\
-\hline
 BoomCore & 1\% & 30\% & 45\% & 11\% & 75\% & 82\%\\
 \hline
 MCC & 2\% & 33\% & 52\% & 15\% & 63\% & 75\%\\
 \hline
+SPC & 2\% & 32\% & 54\% & 14\% & 64\% & 74\%\\
+\hline
 CCX & 2\% & 38\% & 59\% & 4\% & 64\% & 75\%\\
 \hline
-SPC & 2\% & 32\% & 54\% & 14\% & 64\% & 74\%\\
+LDPC & 4\% & 32\% & 36\% & 35\% & 83\% & 85\%\\
 \hline
 LDPC 4x4 & 2\% & 26\% & 40\% & 17\% & 69\% & 74\%\\
 \hline
