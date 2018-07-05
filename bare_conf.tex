@@ -329,7 +329,7 @@
 % use a multiple column layout for up to three different
 % affiliations
 \author{\IEEEauthorblockN{Quentin \textsc{Delhaye}, Dragomir \textsc{Milojevic}}
-\IEEEauthorblockA{ BEAMS, \'Ecole polytechnique, Universit\'e libre de Bruxelles\\
+\IEEEauthorblockA{ BEAMS, \'Ecole polytechnique de Bruxelles, Universit\'e libre de Bruxelles\\
 CP165/50, Av. F.Roosevelt, B-1050 Bruxelles, Belgium\\
 qudelhay@ulb.ac.be, dragomir.milojevic@ulb.ac.be}
 % \and
@@ -512,7 +512,7 @@ In this work we try to understand at what size of gate-cluster we should perform
 The paper is organized as follows: in Section~\ref{sec:optobj} we describe the problem, prior work and introduce graph partitioning as a potential solution for 3D system design; in Section~\ref{sec:setup} we present our experimental framework to study relationship between gate-cluster size and the amount of intra- (2D) vs. inter-cluster (3D) wire-lengths; obtained results are analyzed in Section~\ref{sec:res}; finally conclusions are drawn in Section~\ref{sec:concl}.
 
 \section{Problems ans solutions}\label{sec:optobj}
-\subsection{Problem statement \& existing solutions}
+\subsection{Problem statement and existing solutions}
 As of today there is no full support for 3D circuit integration in commercial EDA tools, especially native 3D placement \& routing (P\&R). Rather, various extensions to existing 2D P\&R have been proposed in academia and industrial R\&D~\cite{Panth}. Extension of such approach with improved 3D PPA has been proposed in \cite{Chang2016}. Standard cell clustering problem during P\&R has been studied in~\cite{Moura2017}. 
 
 All the aforementioned design flows relay either on manual system partitioning, or they automate the partitioning decision for monolithic 3D integration (gate-cluster size of 1). What remains unclear is what happens between this ultimate partitioning grain and more coarser grain partitioning.  
@@ -535,7 +535,7 @@ Graph partitioning algorithms have been exhaustively studied in the literature. 
 
 MIN-CUT algorithms~\cite{Karypis1999,Aykanat2011,Caldwell2000} have already been used when designing 2D systems to limit the number of wires in the upper metal layers of the wiring stack during standard cell placement~\cite{KahngAndrewB.Lienig2011}. Therefore it could seem logical to apply the same methods to 3D. Whether this would make sense would depend on the partitioning grain and the pitch of the 3D connection. Our results showed that no matter the size of the gate-cluster, MIN-CUT produces the same partition, the one already decided by the 2D placement tool. However, if we go the other way and apply a MAX-CUT algorithm on a placed 2D design, we can highlight interesting correlations between the amount of nets cut and the total 3D wire-length. Those results will be further presented in Section~\ref{sec:res}.
 
-Both MIN-CUT and MAC-CUT produce balanced partitions on vertex weights. If we assume gate-cluster area for a vertex weight, partitions will result in 50-50\% die area split. This can be seen as a plus, since hybrid bonding can be executed at wafer level (Wafer-on-Wafer) for increased manufacturing throughput and thus lower price. Such 3D integration technique require 50-50\% die areas on both wafers to minimise losses.
+Both MIN-CUT and MAC-CUT produce balanced partitions on vertex weights. If we assume gate-cluster area for a vertex weight, partitions will result in 50-50\% die area split. This can be seen as a plus, since hybrid bonding can be executed at wafer level (Wafer-on-Wafer) for increased manufacturing throughput and thus lower price. Such 3D integration technique require 50-50\% die areas on both wafers to minimize losses.
 
 \section{Experimental Setup}\label{sec:setup}
 To study the impact of the partitioning grain on potential wire-length gains of the 3D design with respect to 2D implementation, we have developed a software tool chain to process placed \& routed designs and partition netlists for 3D integration using the graph based methods described in section~\ref{sec:partitioning}. Our tool takes as input a 2D placed \& routed design (\texttt{DEF} file), and geometrical views of standard cells used (\texttt{LEF} file) to build a design data base. Following operations are then performed: (1) Input files are parsed to extract the design; (2) Standard cells are clustered, so that each cluster represents a graph vertex ($V$) where its weight represents the total cluster area (see section~\ref{sec:gate-cluster}); (3) Inter-cluster nets are extracted to generate hyperedges ($H$) and weight function is calculated for each edge (note that we could consider different edge weights such as power, bandwidth, etc.); (4) hypergraph $\mathcal{H}$ is built; (5) and then partitioned using: a) MIN-CUT partitioning to minimize the cut size, or b) MAX-CUT (using \texttt{CirCut}) maximize the number of inter-die (or 3D) connections.
@@ -591,7 +591,7 @@ Fig.~\ref{fig:3Dnets}(a) shows the proportion of nets cut by the partitioning wi
 
 An increasing number of 3D nets will translate into tighter, if not unfeasible, 3D pitch. Therefore we need to find a good compromise between the number of 3D nets and the wire-length they represent. Because of the \textit{convergence region} we can define a sweet spot when the 3D wire-length is maximized, for a minimum number of 3D nets.
 
-Such sweet spot can be set around the 5E-2\% of gates-per-cluster mark. This value corresponds to 2048 clusters and means that by cutting from 27\% to 41\% of all available nets, the total inter-cluster wire-length is in the range between 67\% and 84\% of the total wire-length, depending on the considered design. Table~\ref{tab:res} summarizes this result for all designs in our data base and this is the region where the 3D partitioning should occur. 
+Such sweet spot can be set around the 0.05\% of gates-per-cluster mark. This value corresponds to 2048 clusters and means that by cutting from 27\% to 41\% of all available nets, the total inter-cluster wire-length is in the range between 67\% and 84\% of the total wire-length, depending on the considered design. Table~\ref{tab:res} summarizes this result for all designs in our data base and this is the region where the 3D partitioning should occur. 
 \begin{table}[!t]
 % increase table row spacing, adjust to taste
 \renewcommand{\arraystretch}{1.25}
@@ -614,10 +614,11 @@ Std dev & 2\% & 5\% & 7\% & 13\% & 6\% & 4\%\\
 \end{table}
 Beyond this sweet spot total inter-cluster wire-length doesn't change much. At this level of clustering we could capture the most of inter-cluster wire-length. Refining the grain further to eventually reach single gate per cluster (i.e. monolithic 3D-integration) will not necessarily improve the system PPA.\\
 Figure~\ref{fig:dits-wl-quart} show that for most designs, the nets cut by the partition have a length between 0.1\% to 10\% of the longest net cut. In particular it highlights the fact that the shortest nets are a minority, hence limiting the drop of performance when rerouting those in 3D.
+% TODO Refaire la figure de distribution pour 2048 clusters
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.9\linewidth]{netCutWL_maxcut_all_log-quartv4.png}
-\caption{Distribution of the percentage of cut wires per logarithmic quartile of their wire-length relative to the longest net, for 1024 clusters.}
+\includegraphics[width=0.9\linewidth]{netCutWL_maxcut_all_log-quart_2048.png}
+\caption{Distribution of the percentage of cut wires per logarithmic quartile of their wire-length relative to the longest net, for 2048 clusters.}
 \label{fig:dits-wl-quart}
 \end{figure}
 \section{Conclusion}\label{sec:concl}
