@@ -322,7 +322,7 @@
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
 %\title{System Partitioning for 3D ICs:\\Is it even worth it?}
-\title{3D-Stacked Integrated Circuits: Deciding on Partitioning Grain for Logic-on-Logic Applications}
+\title{3D-Stacked Integrated Circuits: \\ How Fine System Partitioning Should Be?}
 
 
 % author names and affiliations
@@ -373,10 +373,7 @@ qudelhay@ulb.ac.be, dragomir.milojevic@ulb.ac.be}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-In 3D ICs, we superpose layers of gates in order to reduce the total 3D wire-length.
-When partitioning a system, arises the question of the grain at which it should be considered to optimize the gains.
-In this work, we study designs ranging from 42k gates to 800k gates and cluster them from 8 to 32768 portions.
-We find that with 2048 clusters, i.e. from 20 to 400 gates depending on the design, a partitioning of the system allows on average to cut 35\% of the nets and to consider 73\% of the total wire-length in 3D.
+3D stacked ICs package multiple, independently manufactured dies to reduce total system wire-length and improve timing, reduce area and power. When designing stacked 3D-ICs, arises the question of the grain at which one should consider system partitioning to optimize the gains. In this work we use known graph partitioning algorithm to split designs from 42k gates and up to 800k gates, with gates clustered in 8 and up to 32768 partitions. We find that with 2048 clusters, 20 to 400 gates per cluster depending on the design, a partitioning of the system allows on average to cut 35\% of the nets that account for 73\% of the total wire-length in 3D.
 \end{abstract}
 
 % no keywords
@@ -490,190 +487,17 @@ We find that with 2048 clusters, i.e. from 20 to 400 gates depending on the desi
 % \fnbelowfloat command of the stfloats package.
 
 \section{Introduction}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 While CMOS technologies continues to scale as we enter the era of 3nm transistors~\cite{imec3nm}, the question of Moore's law sustainability still remains open. Many facts could support the previous claim, in the following we will cover just a few.
 
 At device level, transistor gate pitch is not expected to scale much further due to photo-lithography limitations. To still enable area scaling, new type of transistor devices have been proposed (FinFet, nano-wire, etc.) with huge number of device options. These options impact in a great deal the final Power, Performance, Area (PPA) of a design and thus require careful optimization during device selection/configuration and standard cell design. Due to the number of options involved, this optimization, known as Design-Technology Co-Optimization (DTCO)~\cite{Mattii2017}, is becoming more and more complex, requiring a lot of research and development effort.
 
 At logic level, alternative gate architectures have been explored, all aiming at reducing the height of standard cells. While this might look appealing at a first sight (area reduction of a gate with less scaled transistor area), this also means that the number of routing tracks per gate decreases. Unfortunately, the number of pins per gate remains constant: we still need cell inputs, outputs and power pins. Reduced cell height will cause the overall pin density of a design to increase, which in turn will cause increased congestion, causing routability problems. To solve congestion, options are limited: re-design, increase area and/or improve metal layers used for routing. All these solutions come with an extra cost.
 
-Surely it is known that advanced CMOS nodes are becoming more and more expensive, mainly because of multi-patterning techniques used for circuit manufacturing. Furthermore, manufacturing yields can not reach desired figures, thus limiting the die area and preventing cost-effective manufacturing of big dies used in high-performance computing, network processors, etc. 
+Surely it is known that advanced CMOS nodes are becoming more and more expensive, mainly because of multi-patterning techniques used for circuit manufacturing. Furthermore, manufacturing yields can not reach desired figures, thus limiting the die area and preventing cost-effective manufacturing of big dies used in high-performance computing, network processors, graphical processing units etc. 
 
-To address different issues linked to 2D CMOS scaling, 3D integration technology has been proposed in which multiple transistor/gate layers are combined together in the same package. Such integration can be applied on independently manufactured dies (known as 3D-stacked circuits) or at transistor level (monolithic 3D integration). 
+To address issues linked to 2D CMOS scaling, 3D integration technologies have been proposed in which multiple transistor/gate layers are combined together in the same package. Such integration can be applied on independently manufactured dies (known as 3D-stacked circuits) or at transistor level (monolithic 3D integration).
 
-When compared to 2D, 3D integrated circuits offer: reduced footprint, less wire-length --meaning better system routability-- less interconnect parasitics, less interconnect power, less buffer insertion during timing optimization and therefore less total silicon area, less power, better timing, less IR-drop, etc. 
+When compared to 2D, 3D integrated circuits offer: reduced footprint, less wire-length -- meaning better system routability -- less interconnect parasitics, less interconnect power, less buffer insertion during timing optimization and therefore less total silicon area, less power, better timing, less IR-drop, etc. 
 
 Beyond PPA improvements, 3D-stacked circuits also offer the possibility of building  \emph{technologically heterogeneous circuits}. In such circuits, different CMOS processes can be packaged together with almost on-chip like connectivity both in terms of density and performance. Each sub-circuit can be optimized for a given functionality (high-performance, low-power, memory, etc.) for further performance/cost benefits.
 
@@ -798,11 +622,11 @@ Figure~\ref{fig:dits-wl-quart} show that for most designs, the nets cut by the p
 \label{fig:dits-wl-quart}
 \end{figure}
 \section{Conclusion}\label{sec:concl}
-For quite some time, 3D integrated circuits have been considered as a potential solution to extend Moore's law.
-As the pitch of the 3D structures scales, allowing millions of connections per $mm^2$, the question on how, and especially at what grain, we should execute system partition when building a 3D system is becoming critical.
+For quite some time 3D integrated circuits have been considered as a potential solution to extend Moore's law.
+As the pitch of the 3D structures scales allowing millions of connections per $mm^2$, the question on how, and especially at what grain, we should execute system partition when building a 3D system is becoming critical.
 In this paper we have highlighted the existence of a sweet spot for the clustering grain which maximizes the amount of inter-cluster wire-length with respect to the total system wire-length, while limiting the inter-tier nets.
 The existence of this sweet spot tells us that in order to maximize the PPA benefits of 3D integration technology, we do not need to consider the circuit partitioning at very fine grain.
-In our future work, we will explore alternative clustering methods in order to further reduce the amount of short nets in the partitioning cut and further optimize the partitioning decision, including multi-criteria optimization.
+In our future work, we will explore alternative clustering methods in order to further reduce the amount of short nets in the partitioning cut and further optimize the partitioning decision, including multi-criteria optimization methods.
 
 % use section* for acknowledgment
 % \section*{Acknowledgment}
