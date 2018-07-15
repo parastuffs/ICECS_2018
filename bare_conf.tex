@@ -322,7 +322,7 @@
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
 %\title{System Partitioning for 3D ICs:\\Is it even worth it?}
-\title{3D-Stacked Integrated Circuits: \\ How Fine System Partitioning Should Be?}
+\title{3D-Stacked Integrated Circuits: \\ How Fine Should System Partitioning Be?}
 
 
 % author names and affiliations
@@ -373,7 +373,7 @@ qudelhay@ulb.ac.be, dragomir.milojevic@ulb.ac.be}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-3D stacked ICs package multiple, independently manufactured dies to reduce total system wire-length and improve timing, reduce area and power. When designing stacked 3D-ICs, arises the question of the grain at which one should consider system partitioning to optimize the gains. In this work we use known graph partitioning algorithm to split designs from 42k gates and up to 800k gates, with gates clustered in 8 and up to 32768 partitions. We find that with 2048 clusters, 20 to 400 gates per cluster depending on the design, a partitioning of the system allows on average to cut 35\% of the nets that account for 73\% of the total wire-length in 3D.
+3D stacked ICs package multiple, independently manufactured dies to reduce total system wire-length, improve timing, and reduce area and power. When designing stacked 3D-ICs, arises the question of the grain at which one should consider system partitioning to optimize the gains. In this work we use known graph partitioning algorithms to split designs from 42k gates and up to 800k gates, with gates clustered in 8 and up to 32768 partitions. We find that with 2048 clusters, i.e. 20 to 400 gates per cluster depending on the design, a partitioning of the system allows on average to cut 35\% of the nets that account for 73\% of the total wire-length in 3D.
 \end{abstract}
 
 % no keywords
@@ -493,11 +493,11 @@ At device level, transistor gate pitch is not expected to scale much further due
 
 At logic level, alternative gate architectures have been explored, all aiming at reducing the height of standard cells. While this might look appealing at a first sight (area reduction of a gate with less scaled transistor area), this also means that the number of routing tracks per gate decreases. Unfortunately, the number of pins per gate remains constant: we still need cell inputs, outputs and power pins. Reduced cell height will cause the overall pin density of a design to increase, which in turn will cause increased congestion, causing routability problems. To solve congestion, options are limited: re-design, increase area and/or improve metal layers used for routing. All these solutions come with an extra cost.
 
-Surely it is known that advanced CMOS nodes are becoming more and more expensive, mainly because of multi-patterning techniques used for circuit manufacturing. Furthermore, manufacturing yields can not reach desired figures, thus limiting the die area and preventing cost-effective manufacturing of big dies used in high-performance computing, network processors, graphical processing units etc. 
+Surely it is known that advanced CMOS nodes are becoming more and more expensive, mainly because of multi-patterning techniques used for circuit manufacturing. Furthermore, manufacturing yields can not reach desired figures, thus limiting the die area and preventing cost-effective manufacturing of big dies used in high-performance computing, network processors, graphical processing units, etc. 
 
 To address issues linked to 2D CMOS scaling, 3D integration technologies have been proposed in which multiple transistor/gate layers are combined together in the same package. Such integration can be applied on independently manufactured dies (known as 3D-stacked circuits) or at transistor level (monolithic 3D integration).
 
-When compared to 2D, 3D integrated circuits offer: reduced footprint, less wire-length -- meaning better system routability -- less interconnect parasitics, less interconnect power, less buffer insertion during timing optimization and therefore less total silicon area, less power, better timing, less IR-drop, etc. 
+When compared to 2D, 3D integrated circuits offer: reduced footprint, less wire-length --- meaning better system routability --- less interconnect parasitics, less interconnect power, less buffer insertion during timing optimization and therefore less total silicon area, less power, better timing, less IR-drop, etc. 
 
 Beyond PPA improvements, 3D-stacked circuits also offer the possibility of building  \emph{technologically heterogeneous circuits}. In such circuits, different CMOS processes can be packaged together with almost on-chip like connectivity both in terms of density and performance. Each sub-circuit can be optimized for a given functionality (high-performance, low-power, memory, etc.) for further performance/cost benefits.
 
@@ -549,7 +549,7 @@ To study the impact of the partitioning grain on potential wire-length gains of 
 \end{figure*} 
 
 \subsection{Gate-clusters}\label{sec:gate-cluster}
-To generate gate-clusters we use divisive hierarchical clustering~\cite{Rokach2005} based on the geometry of the design: top-level design is first split vertically into two parts of the same size, then each part is split again, but horizontally. This process is repeated recursively -- subsequent vertical and horizontal splits -- until the targeted amount of clusters is reached. In our experiments, we consider the cluster sizes from 2 to 32768 in power-of-2 steps. The largest number of clusters (i.e. the smallest cluster size) has been picked so that the gate-count for our biggest design doesn't go below 25 gates.
+To generate gate-clusters we use divisive hierarchical clustering~\cite{Rokach2005} based on the geometry of the design: top-level design is first split vertically into two parts of the same size, then each part is split again, but horizontally. This process is repeated recursively --- subsequent vertical and horizontal splits --- until the targeted amount of clusters is reached. In our experiments, we consider the cluster sizes from 2 to 32768 in power-of-2 steps. The largest number of clusters (i.e. the smallest cluster size) has been picked so that the gate-count for our biggest design doesn't go below 25 gates.
 
 \subsection{Designs data base}
 For our experiments we have considered the following designs: D1) an open source implementation of low-parity density parity check; D2) BoomCore: \textit{Berkeley Out-of-Order Machine}, an open source implementation of the RISC-V micro-processor; D4) MCC: a medium complexity core; D3) \& D5) respectively a crossbar and core of the OpenSparc T2 SoC;  D6) an SoC with 16 processing elements that are only locally connected (daisy chain); and D7) an SoC with 16 fully connected processing elements (each processing element is connected to all the others). Table~\ref{tab:designs} summarizes key design parameters: gate count, the total number of nets and total design wire-length after P\&R using and open-source PDK. Note that the total wire-length is normalized to the design half-perimeter. 
